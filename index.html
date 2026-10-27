@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MS WhatsApp</title>
+<style>
+:root{--bg:#0f1a1d;--s1:#16262b;--s2:#1e3238;--s3:#27424a;--line:#2a4047;--tx:#e6f0ee;--mut:#8ea8a6;--acc:#34d399;--acc2:#0f5c47;--amb:#f4b942;--red:#f2776b;--r:16px}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:"Avenir Next","Segoe UI",system-ui,sans-serif;background:#081012;color:var(--tx);display:flex;justify-content:center;align-items:center}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+svg.i{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#app{width:100%;max-width:440px;height:100dvh;max-height:860px;background:var(--bg);position:relative;overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:500px){#app{border-radius:28px;border:1px solid var(--line);box-shadow:0 30px 80px #000a}}
+header{padding:calc(14px + env(safe-area-inset-top)) 18px 10px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--mut);margin-top:3px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--amb)}
+.dot.on{background:var(--acc);box-shadow:0 0 0 0 #34d39966;animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 7px #34d39900}100%{box-shadow:0 0 0 0 #34d39900}}
+.ib{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:var(--mut)}
+.ib:hover{background:var(--s1);color:var(--tx)}
+.views{flex:1;position:relative;overflow:hidden}
+.view{position:absolute;inset:0;overflow-y:auto;padding:4px 14px 90px;display:none}
+.view.on{display:block}
+.search{display:flex;align-items:center;gap:10px;background:var(--s1);border-radius:999px;padding:0 14px;height:42px;margin:4px 0 10px;color:var(--mut)}
+.search input{flex:1;background:none;border:0;color:var(--tx);font:inherit;font-size:14px;outline:0}
+.chips{display:flex;gap:8px;margin-bottom:8px;overflow-x:auto}
+.chip{padding:7px 14px;border-radius:999px;background:var(--s1);color:var(--mut);font-size:13px;white-space:nowrap}
+.chip.on{background:var(--acc);color:#04251a;font-weight:600}
+.row{display:flex;gap:12px;align-items:center;padding:12px 6px;border-radius:14px;width:100%;text-align:left}
+.row:hover{background:var(--s1)}
+.av{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:16px;flex:none;color:#04251a}
+.meta{flex:1;min-width:0}
+.meta b{display:block;font-size:15px}
+.meta span{display:block;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.side{text-align:right;font-size:11px;color:var(--mut);display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.badge{background:var(--acc);color:#04251a;border-radius:999px;font-weight:700;min-width:20px;height:20px;display:grid;place-items:center;padding:0 6px}
+.fab{position:absolute;right:18px;bottom:88px;width:54px;height:54px;border-radius:18px;background:var(--acc);color:#04251a;display:grid;place-items:center;box-shadow:0 10px 24px #34d39944;z-index:5}
+nav{position:absolute;left:0;right:0;bottom:0;display:flex;background:#0c1619ee;backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom));z-index:6}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--mut);padding:6px;border-radius:12px;position:relative}
+nav button.on{color:var(--acc)}
+nav .nb{position:absolute;top:0;left:56%;background:var(--amb);color:#2b1c00;border-radius:999px;font-size:10px;font-weight:700;padding:1px 6px}
+.card{background:var(--s1);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card h3{font-size:15px;margin-bottom:4px}
+.card p{font-size:13px;color:var(--mut);line-height:1.5}
+.btn{background:var(--acc);color:#04251a;font-weight:700;border-radius:12px;padding:11px 16px;font-size:14px}
+.btn.ghost{background:var(--s2);color:var(--tx);font-weight:600}
+.btn:active{transform:scale(.97)}
+/* chat */
+#chat{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:10}
+#chat.on{display:flex;animation:slide .22s ease-out}
+@keyframes slide{from{transform:translateX(30px);opacity:0}}
+.chead{display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 10px 10px;border-bottom:1px solid var(--line);background:var(--s1)}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:6px}
+.m{max-width:80%;padding:9px 12px 6px;border-radius:16px;font-size:14.5px;line-height:1.4;background:var(--s2);align-self:flex-start;border-bottom-left-radius:4px}
+.m.me{align-self:flex-end;background:var(--acc2);border-bottom-left-radius:16px;border-bottom-right-radius:4px}
+.m small{display:flex;gap:4px;justify-content:flex-end;align-items:center;font-size:10.5px;color:var(--mut);margin-top:3px}
+.m small svg{width:14px;height:14px}
+.st-q{color:var(--amb)}.st-r{color:var(--mut)}.st-d{color:var(--acc)}
+.wave{display:flex;align-items:center;gap:6px}.wave i{display:block;width:3px;border-radius:2px;background:var(--acc)}
+.wave button{width:30px;height:30px;border-radius:50%;background:var(--acc);color:#04251a;display:grid;place-items:center}
+.compose{display:flex;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));background:var(--s1);align-items:center}
+.compose input{flex:1;height:44px;border-radius:999px;border:0;background:var(--s2);color:var(--tx);padding:0 16px;font:inherit;font-size:15px;outline:0}
+.compose .ib{background:var(--acc);color:#04251a}
+.compose .ib.rec{background:var(--red);animation:pulse 1s infinite}
+/* mesh */
+.radar{position:relative;width:240px;height:240px;margin:8px auto 18px;border-radius:50%;background:radial-gradient(circle,#34d39914,transparent 70%);border:1px solid var(--line)}
+.radar:before,.radar:after{content:"";position:absolute;border-radius:50%;border:1px solid var(--line);inset:30px}
+.radar:after{inset:68px}
+.sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#34d39944,transparent 25%);animation:spin 3s linear infinite;opacity:0}
+.radar.scan .sweep{opacity:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+.me-dot{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 6px #34d39933}
+.peer{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--amb);margin:-6px;transition:.4s}
+.peer.on{background:var(--acc)}
+.tog{width:46px;height:26px;border-radius:999px;background:var(--s3);position:relative;flex:none;transition:.2s}
+.tog:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.tog.on{background:var(--acc)}.tog.on:after{left:23px;background:#04251a}
+.bar{display:flex;height:12px;border-radius:999px;overflow:hidden;gap:2px;background:var(--bg);padding:2px;margin:12px 0 8px}
+.bar div{border-radius:999px;transition:width .5s}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--mut)}
+.leg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.sp{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.sp:last-child{border:0}
+#toast{position:absolute;left:50%;bottom:96px;transform:translate(-50%,20px);background:var(--s3);padding:10px 16px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:30;white-space:nowrap}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.7 7L4 20l1.2-4.6A8 8 0 1 1 21 12z"/></symbol>
+<symbol id="mesh" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="20" r="2"/><path d="M6.5 7.5l4 3M17.5 7.5l-4 3M12 14v4"/></symbol>
+<symbol id="vault" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+<symbol id="gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4-4"/></symbol>
+<symbol id="back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-7z"/></symbol>
+<symbol id="mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+<symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></symbol>
+<symbol id="tick" viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></symbol>
+<symbol id="ticks" viewBox="0 0 24 24"><path d="M2 13l4 4 8-9M12 15l2 2 8-9"/></symbol>
+<symbol id="play" viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z" fill="currentColor"/></symbol>
+</defs></svg>
+
+<div id="app">
+  <header>
+    <div>
+      <h1>MS WhatsApp</h1>
+      <div class="pill"><span class="dot on" id="hdot"></span><span id="hstat">Offline · 4 mesh peers</span></div>
+    </div>
+    <div style="display:flex">
+      <button class="ib" aria-label="Search" onclick="document.getElementById('q').focus();go('chats')"><svg class="i"><use href="#search"/></svg></button>
+      <button class="ib" aria-label="Settings" onclick="go('settings')"><svg class="i"><use href="#gear"/></svg></button>
+    </div>
+  </header>
+
+  <div class="views">
+    <section class="view on" id="v-chats">
+      <label class="search"><svg class="i"><use href="#search"/></svg><input id="q" placeholder="Search chats" autocomplete="off"></label>
+      <div class="chips" id="chips">
+        <button class="chip on" data-f="all">All</button><button class="chip" data-f="unread">Unread</button><button class="chip" data-f="queued">Queued</button>
+      </div>
+      <div id="list"></div>
+      <button class="fab" aria-label="New chat" onclick="toast('Pick a nearby peer from Mesh to start a chat');go('mesh')"><svg class="i"><use href="#plus"/></svg></button>
+    </section>
+
+    <section class="view" id="v-mesh">
+      <div class="radar" id="radar"><div class="sweep"></div><div class="me-dot"></div></div>
+      <div style="text-align:center;margin-bottom:16px">
+        <button class="btn" id="scan">Scan for peers</button>
+      </div>
+      <div class="card"><h3>Nearby peers</h3><p id="peerp">Messages hop from phone to phone over Bluetooth and Wi-Fi until they reach their recipient.</p><div id="peers" style="margin-top:8px"></div></div>
+    </section>
+
+    <section class="view" id="v-vault">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><h3>Offline storage</h3><b id="used" style="color:var(--acc);font-size:14px">4.2 GB / 32 GB</b></div>
+        <div class="bar"><div style="width:42%;background:var(--acc)"></div><div style="width:33%;background:#5eead4"></div><div style="width:15%;background:#7d9a97"></div><div id="qbar" style="width:10%;background:var(--amb)"></div></div>
+        <div class="leg"><span><i style="background:var(--acc)"></i>Voice 1.8 GB</span><span><i style="background:#5eead4"></i>Photos 1.4 GB</span><span><i style="background:#7d9a97"></i>Docs 640 MB</span><span><i style="background:var(--amb)"></i>Queue 380 MB</span></div>
+      </div>
+      <div class="card" id="purgecard" style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <div><h3>142 MB of old relay cache</h3><p>Expired files from other peers.</p></div>
+        <button class="btn ghost" id="purge">Clear</button>
+      </div>
+      <div class="card"><h3>Shared with you</h3>
+        <div class="sp"><div><b style="font-size:14px">Sector-7 Evac map</b><p>640p · via Peer 4</p></div><button class="btn ghost" onclick="toast('Opened Sector-7 Evac map')">Open</button></div>
+        <div class="sp"><div><b style="font-size:14px">Solar rig schematic</b><p>PDF · 120 KB</p></div><button class="btn ghost" onclick="toast('Opened Solar rig schematic')">Open</button></div>
+      </div>
+    </section>
+
+    <section class="view" id="v-settings">
+      <div class="card">
+        <div class="sp"><div><b style="font-size:14px">Mesh relay</b><p>Pass messages for nearby peers</p></div><button class="tog on" data-k="mesh" aria-label="Mesh relay"></button></div>
+        <div class="sp"><div><b style="font-size:14px">Compress media</b><p>Voice as Opus 12 kbps, photos as WebP</p></div><button class="tog on" data-k="comp" aria-label="Compress media"></button></div>
+        <div class="sp"><div><b style="font-size:14px">Encrypt on device</b><p>256-bit AES vault</p></div><button class="tog on" data-k="aes" aria-label="Encrypt"></button></div>
+        <div class="sp"><div><b style="font-size:14px">Read receipts</b><p>Tell senders when you read</p></div><button class="tog" data-k="rr" aria-label="Read receipts"></button></div>
+      </div>
+      <div class="card"><h3>Reset demo</h3><p style="margin-bottom:10px">Clear all messages and start fresh.</p><button class="btn ghost" id="reset">Reset chats</button></div>
+    </section>
+  </div>
+
+  <section id="chat" aria-label="Conversation">
+    <div class="chead">
+      <button class="ib" aria-label="Back" onclick="closeChat()"><svg class="i"><use href="#back"/></svg></button>
+      <div class="av" id="cav" style="width:40px;height:40px;font-size:14px"></div>
+      <div class="meta"><b id="cname"></b><span id="csub"></span></div>
+      <button class="ib" aria-label="Mesh" onclick="closeChat();go('mesh')"><svg class="i"><use href="#mesh"/></svg></button>
+    </div>
+    <div class="msgs" id="msgs"></div>
+    <form class="compose" id="form">
+      <input id="inp" placeholder="Message" autocomplete="off">
+      <button type="button" class="ib" id="mic" aria-label="Record voice note"><svg class="i"><use href="#mic"/></svg></button>
+      <button type="submit" class="ib" aria-label="Send"><svg class="i"><use href="#send"/></svg></button>
+    </form>
+  </section>
+
+  <nav id="nav">
+    <button data-v="chats" class="on"><svg class="i"><use href="#chat"/></svg>Chats</button>
+    <button data-v="mesh"><svg class="i"><use href="#mesh"/></svg>Mesh</button>
+    <button data-v="vault"><svg class="i"><use href="#vault"/></svg>Vault<span class="nb" id="qn">3</span></button>
+    <button data-v="settings"><svg class="i"><use href="#gear"/></svg>Settings</button>
+  </nav>
+  <div id="toast"></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const cols=['#34d399','#f4b942','#7dd3fc','#f2a1c0','#c4b5fd'];
+const base=()=>[
+ {id:1,n:'Elena Rostova',u:2,m:[['in','Reached the ridge camp. Signal is gone, mesh only.','09:12'],['in','Can you relay the evac map to Marcus?','09:14']]},
+ {id:2,n:'Marcus Vance',u:1,m:[['in','Ops check-in at 18:00. Bring the solar rig.','08:40']]},
+ {id:3,n:'Field Team',u:0,m:[['me','Batteries swapped at Sector 7.','07:55','d'],['in','Copy that.','07:58']]},
+ {id:4,n:'Amara Okoye',u:0,m:[['in','Thanks for the schematic!','Yesterday']]}];
+let chats=JSON.parse(localStorage.getItem('msw')||'null')||base(),cur=null,filter='all';
+const save=()=>{try{localStorage.setItem('msw',JSON.stringify(chats))}catch(e){}};
+const ic=(id)=>`<svg class="i"><use href="#${id}"/></svg>`;
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('on');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('on'),2000)}
+function go(v){$$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))}
+$$('#nav button').forEach(b=>b.onclick=()=>{closeChat();go(b.dataset.v)});
+const ini=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2);
+const queued=()=>chats.reduce((a,c)=>a+c.m.filter(m=>m[3]==='q').length,0);
+function render(){
+ const q=$('#q').value.toLowerCase();
+ const l=chats.filter(c=>c.n.toLowerCase().includes(q)&&(filter==='all'||(filter==='unread'&&c.u)||(filter==='queued'&&c.m.some(m=>m[3]==='q'))));
+ $('#list').innerHTML=l.length?l.map(c=>{const m=c.m[c.m.length-1]||['','No messages yet',''];
+  return `<button class="row" data-id="${c.id}"><div class="av" style="background:${cols[c.id%5]}">${ini(c.n)}</div><div class="meta"><b>${c.n}</b><span>${m[0]==='me'?'You: ':''}${m[4]?'Voice note':m[1]}</span></div><div class="side"><span>${m[2]}</span>${c.u?`<span class="badge">${c.u}</span>`:''}</div></button>`}).join(''):'<div class="card"><p>No chats match. Try another filter or search.</p></div>';
+ $$('.row').forEach(r=>r.onclick=()=>openChat(+r.dataset.id));
+ const n=queued()+3;$('#qn').textContent=n;
+}
+$$('#chips .chip').forEach(c=>c.onclick=()=>{$$('#chips .chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');filter=c.dataset.f;render()});
+$('#q').oninput=render;
+const stIcon=s=>s==='q'?`<span class="st-q">${ic('clock')}</span>`:s==='r'?`<span class="st-r">${ic('tick')}</span>`:`<span class="st-d">${ic('ticks')}</span>`;
+function bubble(m){
+ const w=m[4]?`<div class="wave"><button aria-label="Play voice note" onclick="toast('Playing voice note')">${ic('play').replace('class="i"','style="width:14px;height:14px"')}</button>${[8,14,10,18,12,20,9,15,11,7].map(h=>`<i style="height:${h}px"></i>`).join('')}<span style="font-size:12px;color:var(--mut)">0:0${m[4]}</span></div>`:m[1];
+ return `<div class="m ${m[0]==='me'?'me':''}">${w}<small>${m[2]}${m[0]==='me'?stIcon(m[3]):''}</small></div>`}
+function drawMsgs(){const c=chats.find(x=>x.id===cur);$('#msgs').innerHTML=c.m.map(bubble).join('');$('#msgs').scrollTop=1e5}
+function openChat(id){cur=id;const c=chats.find(x=>x.id===id);c.u=0;save();
+ $('#cname').textContent=c.n;$('#csub').textContent='Reachable via mesh · 2 hops';
+ const a=$('#cav');a.textContent=ini(c.n);a.style.background=cols[id%5];
+ $('#chat').classList.add('on');drawMsgs();render();setTimeout(()=>$('#inp').focus(),50)}
+function closeChat(){$('#chat').classList.remove('on');cur=null;render()}
+function now(){const d=new Date();return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')}
+function sendMsg(text,voice){
+ const c=chats.find(x=>x.id===cur);const m=['me',text,now(),'q',voice||0];c.m.push(m);save();drawMsgs();render();
+ const mesh=tg.mesh;
+ setTimeout(()=>{m[3]='r';save();if(cur)drawMsgs();render()},mesh?1200:60000);
+ setTimeout(()=>{m[3]='d';save();if(cur===c.id)drawMsgs();render();
+  if(!voice&&mesh&&Math.random()>.4){setTimeout(()=>{c.m.push(['in',['Received. Standing by.','Got it, relaying now.','Copy. Will confirm at base.'][Math.random()*3|0],now()]);if(cur===c.id){drawMsgs()}else c.u++;save();render()},1500)}
+ },mesh?2600:61000);
+ if(!mesh)toast('Mesh relay is off. Message stays queued.');
+}
+$('#form').onsubmit=e=>{e.preventDefault();const t=$('#inp').value.trim();if(!t)return;$('#inp').value='';sendMsg(t)};
+let rec=null;
+$('#mic').onclick=()=>{const b=$('#mic');
+ if(!rec){rec=Date.now();b.classList.add('rec');toast('Recording. Tap again to send.')}
+ else{const s=Math.min(9,Math.max(1,Math.round((Date.now()-rec)/1000)));rec=null;b.classList.remove('rec');sendMsg('',s)}};
+/* mesh */
+const tg={mesh:true,comp:true,aes:true,rr:false};
+const peersData=[['Peer 1 · Elena',70,40,1],['Peer 2 · Marcus',170,80,1],['Peer 3 · Field Radio',60,170,0],['Peer 4 · Amara',180,180,1]];
+let found=false;
+function drawPeers(){
+ $('#radar').querySelectorAll('.peer').forEach(p=>p.remove());
+ if(found)peersData.forEach((p,i)=>{const d=document.createElement('div');d.className='peer'+(p[3]?' on':'');d.style.left=p[1]+'px';d.style.top=p[2]+'px';d.title=p[0];$('#radar').appendChild(d)});
+ $('#peers').innerHTML=found?peersData.map((p,i)=>`<div class="sp"><div><b style="font-size:14px">${p[0]}</b><p>${p[3]?'Connected':'Out of range'}</p></div><button class="btn ghost" data-i="${i}">${p[3]?'Disconnect':'Connect'}</button></div>`).join(''):'';
+ $$('#peers button').forEach(b=>b.onclick=()=>{const p=peersData[b.dataset.i];p[3]=p[3]?0:1;drawPeers();updStat();toast(p[3]?'Connected to '+p[0]:'Disconnected')});
+}
+function updStat(){const n=peersData.filter(p=>p[3]).length;$('#hstat').textContent='Offline · '+n+' mesh peer'+(n===1?'':'s');$('#hdot').classList.toggle('on',n>0&&tg.mesh)}
+$('#scan').onclick=()=>{const r=$('#radar'),b=$('#scan');r.classList.add('scan');b.textContent='Scanning…';b.disabled=true;
+ setTimeout(()=>{r.classList.remove('scan');b.textContent='Scan again';b.disabled=false;found=true;drawPeers();updStat();toast('Found 4 peers nearby')},2200)};
+/* vault */
+$('#purge').onclick=()=>{$('#purge').textContent='Cleared';$('#used').textContent='4.06 GB / 32 GB';setTimeout(()=>$('#purgecard').style.display='none',700);toast('Freed 142 MB')};
+/* settings */
+$$('.tog').forEach(t=>t.onclick=()=>{t.classList.toggle('on');tg[t.dataset.k]=t.classList.contains('on');updStat();toast((t.getAttribute('aria-label'))+(tg[t.dataset.k]?' on':' off'))});
+$('#reset').onclick=()=>{chats=base();save();render();toast('Chats reset')};
+render();
+</script>
+</body>
+                                                                                                    </html>
